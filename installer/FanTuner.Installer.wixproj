@@ -1,0 +1,12 @@
+<Project Sdk="WixToolset.Sdk/4.0.4">
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <ProductVersion>1.0.0</ProductVersion>
+    <InstallerPlatform>x64</InstallerPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\FanTuner.Service\FanTuner.Service.csproj" />
+    <ProjectReference Include="..\src\FanTuner.UI\FanTuner.UI.csproj" />
+  </ItemGroup>
+</Project>

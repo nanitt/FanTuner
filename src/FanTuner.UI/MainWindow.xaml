@@ -1,0 +1,178 @@
+<Window x:Class="FanTuner.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FanTuner.UI.ViewModels"
+        xmlns:views="clr-namespace:FanTuner.UI.Views"
+        mc:Ignorable="d"
+        Title="FanTuner - PC Fan Control"
+        Height="700" Width="1100"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Logo/Title -->
+                <StackPanel Grid.Row="0" Margin="16">
+                    <TextBlock Text="FanTuner"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="PC Fan Control"
+                               FontSize="12"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <!-- Navigation -->
+                <ListBox Grid.Row="1"
+                         Style="{StaticResource NavigationListBox}"
+                         SelectedIndex="{Binding SelectedTabIndex}"
+                         Margin="8,0">
+                    <ListBoxItem Style="{StaticResource NavigationListBoxItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="16" Margin="0,0,12,0"/>
+                            <TextBlock Text="Dashboard"/>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource NavigationListBoxItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9CA;" FontFamily="Segoe MDL2 Assets" FontSize="16" Margin="0,0,12,0"/>
+                            <TextBlock Text="Fans"/>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource NavigationListBoxItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE748;" FontFamily="Segoe MDL2 Assets" FontSize="16" Margin="0,0,12,0"/>
+                            <TextBlock Text="Profiles"/>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource NavigationListBoxItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16" Margin="0,0,12,0"/>
+                            <TextBlock Text="Settings"/>
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+
+                <!-- Connection Status -->
+                <Border Grid.Row="2" Margin="16" Padding="12" CornerRadius="4"
+                        Background="{StaticResource CardBrush}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Ellipse Width="10" Height="10" Margin="0,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{StaticResource ErrorBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="{StaticResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding ConnectionStatus}"
+                                       FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Active Profile -->
+                        <TextBlock Text="Active Profile:" FontSize="11"
+                                   Foreground="{StaticResource TextMutedBrush}"/>
+                        <TextBlock Text="{Binding ActiveProfileName}"
+                                   FontWeight="SemiBold"/>
+
+                        <!-- Reconnect Button -->
+                        <Button Content="Reconnect"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ConnectCommand}"
+                                Margin="0,12,0,0"
+                                Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Emergency Warning Banner -->
+            <Border Grid.Row="0" Style="{StaticResource ErrorBanner}"
+                    Visibility="{Binding IsEmergencyMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Margin="24,16,24,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="20"
+                               Foreground="{StaticResource ErrorBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <StackPanel>
+                        <TextBlock Text="EMERGENCY MODE ACTIVE" FontWeight="Bold"
+                                   Foreground="{StaticResource ErrorBrush}"/>
+                        <TextBlock Text="{Binding EmergencyReason}"
+                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Content Tabs -->
+            <TabControl Grid.Row="1"
+                        SelectedIndex="{Binding SelectedTabIndex}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Padding="24">
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Style>
+                </TabControl.ItemContainerStyle>
+
+                <!-- Dashboard -->
+                <TabItem>
+                    <views:DashboardView DataContext="{Binding}"/>
+                </TabItem>
+
+                <!-- Fans -->
+                <TabItem>
+                    <views:FansView/>
+                </TabItem>
+
+                <!-- Profiles -->
+                <TabItem>
+                    <views:ProfilesView/>
+                </TabItem>
+
+                <!-- Settings -->
+                <TabItem>
+                    <views:SettingsView/>
+                </TabItem>
+            </TabControl>
+
+            <!-- Loading Overlay -->
+            <Border Grid.Row="1"
+                    Background="#80000000"
+                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="100"/>
+                    <TextBlock Text="Loading..." Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

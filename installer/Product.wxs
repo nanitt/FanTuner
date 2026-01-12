@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="FanTuner"
+    Version="1.0.0"
+    Manufacturer="FanTuner"
+    UpgradeCode="12345678-1234-1234-1234-123456789ABC"
+    Scope="perMachine"
+    Language="1033"
+    Codepage="1252">
+
+    <SummaryInformation Keywords="Installer" Description="FanTuner PC Fan Control Application" />
+
+    <!-- Major Upgrade -->
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+      Schedule="afterInstallInitialize" />
+
+    <!-- Media -->
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Features -->
+    <Feature Id="ProductFeature" Title="FanTuner" Level="1">
+      <ComponentGroupRef Id="ServiceComponents" />
+      <ComponentGroupRef Id="UIComponents" />
+    </Feature>
+
+    <!-- UI -->
+    <UIRef Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Custom Actions -->
+    <CustomAction
+      Id="InstallService"
+      Directory="SERVICEFOLDER"
+      ExeCommand="[SystemFolder]sc.exe create FanTuner binPath=&quot;[SERVICEFOLDER]FanTuner.Service.exe&quot; start=auto"
+      Execute="deferred"
+      Impersonate="no"
+      Return="check" />
+
+    <CustomAction
+      Id="StartService"
+      Directory="SERVICEFOLDER"
+      ExeCommand="[SystemFolder]sc.exe start FanTuner"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore" />
+
+    <CustomAction
+      Id="StopService"
+      Directory="SERVICEFOLDER"
+      ExeCommand="[SystemFolder]sc.exe stop FanTuner"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore" />
+
+    <CustomAction
+      Id="UninstallService"
+      Directory="SERVICEFOLDER"
+      ExeCommand="[SystemFolder]sc.exe delete FanTuner"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore" />
+
+    <InstallExecuteSequence>
+      <Custom Action="StopService" Before="InstallFiles" Condition="REMOVE" />
+      <Custom Action="UninstallService" After="StopService" Condition="REMOVE" />
+      <Custom Action="InstallService" After="InstallFiles" Condition="NOT REMOVE" />
+      <Custom Action="StartService" After="InstallService" Condition="NOT REMOVE" />
+    </InstallExecuteSequence>
+
+  </Package>
+
+  <!-- Directory Structure -->
+  <Fragment>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="FanTuner">
+        <Directory Id="SERVICEFOLDER" Name="Service" />
+        <Directory Id="UIFOLDER" Name="UI" />
+      </Directory>
+    </StandardDirectory>
+  </Fragment>
+
+  <!-- Service Components -->
+  <Fragment>
+    <ComponentGroup Id="ServiceComponents" Directory="SERVICEFOLDER">
+      <Component Id="ServiceExe">
+        <File Id="FanTunerServiceExe" Source="$(var.FanTuner.Service.TargetDir)FanTuner.Service.exe" KeyPath="yes" />
+        <File Source="$(var.FanTuner.Service.TargetDir)FanTuner.Service.dll" />
+        <File Source="$(var.FanTuner.Service.TargetDir)FanTuner.Core.dll" />
+        <File Source="$(var.FanTuner.Service.TargetDir)LibreHardwareMonitorLib.dll" />
+        <File Source="$(var.FanTuner.Service.TargetDir)HidSharp.dll" />
+        <File Source="$(var.FanTuner.Service.TargetDir)FanTuner.Service.runtimeconfig.json" />
+        <File Source="$(var.FanTuner.Service.TargetDir)FanTuner.Service.deps.json" />
+
+        <!-- Service Definition - Alternative using WiX ServiceInstall -->
+        <!--
+        <ServiceInstall
+          Id="FanTunerServiceInstall"
+          Name="FanTuner"
+          DisplayName="FanTuner Fan Control Service"
+          Description="Monitors system temperatures and controls fan speeds"
+          Type="ownProcess"
+          Start="auto"
+          Account="LocalSystem"
+          ErrorControl="normal" />
+        <ServiceControl
+          Id="FanTunerServiceControl"
+          Name="FanTuner"
+          Start="install"
+          Stop="both"
+          Remove="uninstall"
+          Wait="yes" />
+        -->
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- UI Components -->
+  <Fragment>
+    <ComponentGroup Id="UIComponents" Directory="UIFOLDER">
+      <Component Id="UIExe">
+        <File Id="FanTunerUIExe" Source="$(var.FanTuner.UI.TargetDir)FanTuner.exe" KeyPath="yes" />
+        <File Source="$(var.FanTuner.UI.TargetDir)FanTuner.dll" />
+        <File Source="$(var.FanTuner.UI.TargetDir)FanTuner.Core.dll" />
+        <File Source="$(var.FanTuner.UI.TargetDir)FanTuner.runtimeconfig.json" />
+        <File Source="$(var.FanTuner.UI.TargetDir)FanTuner.deps.json" />
+
+        <!-- Start Menu Shortcut -->
+        <Shortcut
+          Id="StartMenuShortcut"
+          Directory="ProgramMenuFolder"
+          Name="FanTuner"
+          Description="PC Fan Control Application"
+          WorkingDirectory="UIFOLDER"
+          Advertise="yes" />
+
+        <!-- Desktop Shortcut (optional) -->
+        <!--
+        <Shortcut
+          Id="DesktopShortcut"
+          Directory="DesktopFolder"
+          Name="FanTuner"
+          Description="PC Fan Control Application"
+          WorkingDirectory="UIFOLDER"
+          Advertise="yes" />
+        -->
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>

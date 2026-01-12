@@ -1,0 +1,174 @@
+<UserControl x:Class="FanTuner.UI.Views.FansView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:FanTuner.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <vm:FansViewModel/>
+    </UserControl.DataContext>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <!-- Header -->
+            <Grid Margin="0,0,0,24">
+                <TextBlock Text="Fan Control" Style="{StaticResource HeaderText}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Set All Auto"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding SetAllAutoCommand}"
+                            Margin="0,0,8,0"/>
+                    <Button Content="Save"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SaveFanAssignmentsCommand}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Monitor Only Warning -->
+            <Border Style="{StaticResource WarningBanner}"
+                    Visibility="{Binding HasMonitorOnlyFans, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                <TextBlock Text="Some fans are in monitor-only mode. Control is not available for these fans."
+                           Foreground="{StaticResource WarningBrush}"/>
+            </Border>
+
+            <!-- Fan List -->
+            <ItemsControl ItemsSource="{Binding FanItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource FanCard}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <!-- Fan Name and Status -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <TextBlock Text="{Binding Device.DisplayName}"
+                                                   FontSize="16" FontWeight="SemiBold"/>
+                                        <Border Margin="12,0,0,0" Padding="8,2" CornerRadius="4"
+                                                VerticalAlignment="Center">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Device.CanControl}" Value="False">
+                                                            <Setter Property="Background" Value="{StaticResource TextMutedBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Device.StatusText}"
+                                                       FontSize="10" Foreground="White"/>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <TextBlock Text="{Binding Device.HardwareName}"
+                                               Style="{StaticResource BodyText}" Margin="0,0,0,12"/>
+
+                                    <!-- Current Readings -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                        <StackPanel Margin="0,0,32,0">
+                                            <TextBlock Text="Current RPM" Style="{StaticResource BodyText}" FontSize="11"/>
+                                            <TextBlock FontWeight="SemiBold">
+                                                <TextBlock.Text>
+                                                    <Binding Path="Device.CurrentRpm" StringFormat="{}{0:F0} RPM"/>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="Current %" Style="{StaticResource BodyText}" FontSize="11"/>
+                                            <TextBlock FontWeight="SemiBold">
+                                                <TextBlock.Text>
+                                                    <Binding Path="Device.CurrentPercent" StringFormat="{}{0:F0}%" TargetNullValue="N/A"/>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Control Mode (only if controllable) -->
+                                    <StackPanel Visibility="{Binding Device.CanControl, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="Control Mode" Style="{StaticResource BodyText}"
+                                                   FontSize="11" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton Content="Auto"
+                                                         IsChecked="{Binding Mode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Auto}"
+                                                         GroupName="{Binding Device.Id.UniqueKey}"
+                                                         Margin="0,0,16,0"/>
+                                            <RadioButton Content="Manual"
+                                                         IsChecked="{Binding Mode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Manual}"
+                                                         GroupName="{Binding Device.Id.UniqueKey}"
+                                                         Margin="0,0,16,0"/>
+                                            <RadioButton Content="Curve"
+                                                         IsChecked="{Binding Mode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Curve}"
+                                                         GroupName="{Binding Device.Id.UniqueKey}"/>
+                                        </StackPanel>
+
+                                        <!-- Manual Speed Control -->
+                                        <StackPanel Margin="0,16,0,0"
+                                                    Visibility="{Binding Mode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Manual}">
+                                            <TextBlock Margin="0,0,0,8">
+                                                <Run Text="Speed: "/>
+                                                <Run Text="{Binding ManualPercent, StringFormat={}{0:F0}%}"/>
+                                            </TextBlock>
+                                            <Slider Value="{Binding ManualPercent}"
+                                                    Minimum="0" Maximum="100"
+                                                    TickFrequency="5"
+                                                    IsSnapToTickEnabled="True"
+                                                    Width="300"
+                                                    HorizontalAlignment="Left"/>
+                                            <Button Content="Apply"
+                                                    Style="{StaticResource SecondaryButton}"
+                                                    Command="{Binding SetManualSpeedCommand}"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Left"/>
+                                        </StackPanel>
+
+                                        <!-- Curve Selection -->
+                                        <StackPanel Margin="0,16,0,0"
+                                                    Visibility="{Binding Mode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Curve}">
+                                            <TextBlock Text="Select Curve:" Margin="0,0,0,8"/>
+                                            <ComboBox Width="200" HorizontalAlignment="Left"
+                                                      ItemsSource="{Binding DataContext.AvailableCurves, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      SelectedValue="{Binding SelectedCurveId}"
+                                                      SelectedValuePath="Id"
+                                                      DisplayMemberPath="Name"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Visual RPM Indicator -->
+                                <Grid Grid.Column="1" Width="80" Height="80" Margin="16,0,0,0">
+                                    <Ellipse Stroke="{StaticResource BorderBrush}" StrokeThickness="4"/>
+                                    <Ellipse Stroke="{StaticResource PrimaryBrush}" StrokeThickness="4"
+                                             StrokeDashArray="3,1">
+                                        <Ellipse.RenderTransform>
+                                            <RotateTransform Angle="0" CenterX="40" CenterY="40"/>
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               FontWeight="Bold" FontSize="14">
+                                        <TextBlock.Text>
+                                            <Binding Path="Device.CurrentPercent" StringFormat="{}{0:F0}%" TargetNullValue="--"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- No Fans Message -->
+            <Border Style="{StaticResource CardStyle}"
+                    Visibility="{Binding FanItems.Count, Converter={StaticResource ZeroToVisibilityConverter}, FallbackValue=Collapsed}">
+                <TextBlock Text="No fans detected. Make sure the FanTuner service is running."
+                           HorizontalAlignment="Center" Padding="24"/>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
