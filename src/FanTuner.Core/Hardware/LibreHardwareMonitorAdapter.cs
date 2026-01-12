@@ -473,62 +473,65 @@ public sealed class LibreHardwareMonitorAdapter : IHardwareAdapter
         return new FanId(hardware.Identifier.ToString(), sensor.Name, index);
     }
 
-    private static SensorType MapToSensorType(LibreHardwareMonitor.Hardware.SensorType type)
+    private static Models.SensorType MapToSensorType(LibreHardwareMonitor.Hardware.SensorType type)
     {
         return type switch
         {
-            LibreHardwareMonitor.Hardware.SensorType.Temperature => SensorType.Temperature,
-            LibreHardwareMonitor.Hardware.SensorType.Fan => SensorType.Fan,
-            LibreHardwareMonitor.Hardware.SensorType.Load => SensorType.Load,
-            LibreHardwareMonitor.Hardware.SensorType.Voltage => SensorType.Voltage,
-            LibreHardwareMonitor.Hardware.SensorType.Clock => SensorType.Clock,
-            LibreHardwareMonitor.Hardware.SensorType.Power => SensorType.Power,
-            LibreHardwareMonitor.Hardware.SensorType.Data => SensorType.Data,
-            LibreHardwareMonitor.Hardware.SensorType.SmallData => SensorType.SmallData,
-            LibreHardwareMonitor.Hardware.SensorType.Throughput => SensorType.Throughput,
-            LibreHardwareMonitor.Hardware.SensorType.Control => SensorType.Control,
-            LibreHardwareMonitor.Hardware.SensorType.Level => SensorType.Level,
-            LibreHardwareMonitor.Hardware.SensorType.Factor => SensorType.Factor,
-            LibreHardwareMonitor.Hardware.SensorType.Frequency => SensorType.Frequency,
-            LibreHardwareMonitor.Hardware.SensorType.TimeSpan => SensorType.TimeSpan,
-            LibreHardwareMonitor.Hardware.SensorType.Energy => SensorType.Energy,
-            LibreHardwareMonitor.Hardware.SensorType.Noise => SensorType.Noise,
-            _ => SensorType.Data
+            LibreHardwareMonitor.Hardware.SensorType.Voltage => Models.SensorType.Voltage,
+            LibreHardwareMonitor.Hardware.SensorType.Current => Models.SensorType.Current,
+            LibreHardwareMonitor.Hardware.SensorType.Clock => Models.SensorType.Clock,
+            LibreHardwareMonitor.Hardware.SensorType.Temperature => Models.SensorType.Temperature,
+            LibreHardwareMonitor.Hardware.SensorType.Load => Models.SensorType.Load,
+            LibreHardwareMonitor.Hardware.SensorType.Frequency => Models.SensorType.Frequency,
+            LibreHardwareMonitor.Hardware.SensorType.Fan => Models.SensorType.Fan,
+            LibreHardwareMonitor.Hardware.SensorType.Flow => Models.SensorType.Flow,
+            LibreHardwareMonitor.Hardware.SensorType.Control => Models.SensorType.Control,
+            LibreHardwareMonitor.Hardware.SensorType.Level => Models.SensorType.Level,
+            LibreHardwareMonitor.Hardware.SensorType.Factor => Models.SensorType.Factor,
+            LibreHardwareMonitor.Hardware.SensorType.Power => Models.SensorType.Power,
+            LibreHardwareMonitor.Hardware.SensorType.Data => Models.SensorType.Data,
+            LibreHardwareMonitor.Hardware.SensorType.SmallData => Models.SensorType.SmallData,
+            LibreHardwareMonitor.Hardware.SensorType.Throughput => Models.SensorType.Throughput,
+            LibreHardwareMonitor.Hardware.SensorType.Energy => Models.SensorType.Energy,
+            LibreHardwareMonitor.Hardware.SensorType.Noise => Models.SensorType.Noise,
+            LibreHardwareMonitor.Hardware.SensorType.Humidity => Models.SensorType.Humidity,
+            _ => Models.SensorType.Data
         };
     }
 
-    private static LibreHardwareMonitor.Hardware.SensorType MapToLhmSensorType(SensorType type)
+    private static LibreHardwareMonitor.Hardware.SensorType MapToLhmSensorType(Models.SensorType type)
     {
         return type switch
         {
-            SensorType.Temperature => LibreHardwareMonitor.Hardware.SensorType.Temperature,
-            SensorType.Fan => LibreHardwareMonitor.Hardware.SensorType.Fan,
-            SensorType.Load => LibreHardwareMonitor.Hardware.SensorType.Load,
-            SensorType.Voltage => LibreHardwareMonitor.Hardware.SensorType.Voltage,
-            SensorType.Clock => LibreHardwareMonitor.Hardware.SensorType.Clock,
-            SensorType.Power => LibreHardwareMonitor.Hardware.SensorType.Power,
-            SensorType.Control => LibreHardwareMonitor.Hardware.SensorType.Control,
+            Models.SensorType.Temperature => LibreHardwareMonitor.Hardware.SensorType.Temperature,
+            Models.SensorType.Fan => LibreHardwareMonitor.Hardware.SensorType.Fan,
+            Models.SensorType.Load => LibreHardwareMonitor.Hardware.SensorType.Load,
+            Models.SensorType.Voltage => LibreHardwareMonitor.Hardware.SensorType.Voltage,
+            Models.SensorType.Clock => LibreHardwareMonitor.Hardware.SensorType.Clock,
+            Models.SensorType.Power => LibreHardwareMonitor.Hardware.SensorType.Power,
+            Models.SensorType.Control => LibreHardwareMonitor.Hardware.SensorType.Control,
             _ => LibreHardwareMonitor.Hardware.SensorType.Data
         };
     }
 
-    private static HardwareType MapToHardwareType(LibreHardwareMonitor.Hardware.HardwareType type)
+    private static Models.HardwareType MapToHardwareType(LibreHardwareMonitor.Hardware.HardwareType type)
     {
         return type switch
         {
-            LibreHardwareMonitor.Hardware.HardwareType.Cpu => HardwareType.Cpu,
-            LibreHardwareMonitor.Hardware.HardwareType.GpuNvidia => HardwareType.GpuNvidia,
-            LibreHardwareMonitor.Hardware.HardwareType.GpuAmd => HardwareType.GpuAmd,
-            LibreHardwareMonitor.Hardware.HardwareType.GpuIntel => HardwareType.GpuIntel,
-            LibreHardwareMonitor.Hardware.HardwareType.Motherboard => HardwareType.Motherboard,
-            LibreHardwareMonitor.Hardware.HardwareType.Memory => HardwareType.Ram,
-            LibreHardwareMonitor.Hardware.HardwareType.Storage => HardwareType.Storage,
-            LibreHardwareMonitor.Hardware.HardwareType.Network => HardwareType.Network,
-            LibreHardwareMonitor.Hardware.HardwareType.Cooler => HardwareType.Cooler,
-            LibreHardwareMonitor.Hardware.HardwareType.EmbeddedController => HardwareType.EmbeddedController,
-            LibreHardwareMonitor.Hardware.HardwareType.Psu => HardwareType.Psu,
-            LibreHardwareMonitor.Hardware.HardwareType.Battery => HardwareType.Battery,
-            _ => HardwareType.Unknown
+            LibreHardwareMonitor.Hardware.HardwareType.Motherboard => Models.HardwareType.Motherboard,
+            LibreHardwareMonitor.Hardware.HardwareType.SuperIO => Models.HardwareType.SuperIO,
+            LibreHardwareMonitor.Hardware.HardwareType.Cpu => Models.HardwareType.Cpu,
+            LibreHardwareMonitor.Hardware.HardwareType.Memory => Models.HardwareType.Memory,
+            LibreHardwareMonitor.Hardware.HardwareType.GpuNvidia => Models.HardwareType.GpuNvidia,
+            LibreHardwareMonitor.Hardware.HardwareType.GpuAmd => Models.HardwareType.GpuAmd,
+            LibreHardwareMonitor.Hardware.HardwareType.GpuIntel => Models.HardwareType.GpuIntel,
+            LibreHardwareMonitor.Hardware.HardwareType.Storage => Models.HardwareType.Storage,
+            LibreHardwareMonitor.Hardware.HardwareType.Network => Models.HardwareType.Network,
+            LibreHardwareMonitor.Hardware.HardwareType.Cooler => Models.HardwareType.Cooler,
+            LibreHardwareMonitor.Hardware.HardwareType.EmbeddedController => Models.HardwareType.EmbeddedController,
+            LibreHardwareMonitor.Hardware.HardwareType.Psu => Models.HardwareType.Psu,
+            LibreHardwareMonitor.Hardware.HardwareType.Battery => Models.HardwareType.Battery,
+            _ => Models.HardwareType.Unknown
         };
     }
 

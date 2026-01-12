@@ -5,22 +5,24 @@ namespace FanTuner.Core.Models;
 /// </summary>
 public enum SensorType
 {
-    Temperature,
-    Fan,
-    Load,
     Voltage,
+    Current,
     Clock,
+    Temperature,
+    Load,
+    Frequency,
+    Fan,
+    Flow,
+    Control,
+    Level,
+    Factor,
     Power,
     Data,
     SmallData,
     Throughput,
-    Control,
-    Level,
-    Factor,
-    Frequency,
-    TimeSpan,
     Energy,
-    Noise
+    Noise,
+    Humidity
 }
 
 /// <summary>
@@ -28,12 +30,13 @@ public enum SensorType
 /// </summary>
 public enum HardwareType
 {
+    Motherboard,
+    SuperIO,
     Cpu,
+    Memory,
     GpuNvidia,
     GpuAmd,
     GpuIntel,
-    Motherboard,
-    Ram,
     Storage,
     Network,
     Cooler,
